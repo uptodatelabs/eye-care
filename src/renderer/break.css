@@ -19,22 +19,22 @@ html, body {
 }
 
 .overlay {
-  width: min(640px, 90vw);
-  padding: 48px 40px;
+  width: min(680px, 92vw);
+  padding: 40px 36px;
   text-align: center;
 }
 
-.header { margin-bottom: 28px; }
+.header { margin-bottom: 24px; }
 
 .title {
-  font-size: 32px;
+  font-size: 30px;
   font-weight: 600;
   letter-spacing: -0.01em;
 }
 
 .subtitle {
-  margin-top: 8px;
-  font-size: 16px;
+  margin-top: 6px;
+  font-size: 15px;
   color: #9aa4c0;
 }
 
@@ -44,7 +44,7 @@ html, body {
   background: #1e2540;
   border-radius: 999px;
   overflow: hidden;
-  margin: 24px 0 32px;
+  margin: 20px 0 24px;
 }
 
 .progress-fill {
@@ -54,31 +54,50 @@ html, body {
   transition: width 0.2s linear;
 }
 
-.exercise { min-height: 180px; }
+.exercise { min-height: 320px; }
 
 .exercise-name {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 600;
   color: #6bd4c0;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+}
+
+.guide-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 240px;
+  margin: 0 auto 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+}
+
+.guide-svg {
+  width: 100%;
+  height: 100%;
+  max-width: 480px;
 }
 
 .step-text {
-  font-size: 20px;
+  font-size: 18px;
   line-height: 1.5;
   color: #f7f8fa;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
+  min-height: 27px;
 }
 
 .step-time {
-  font-size: 56px;
+  font-size: 48px;
   font-weight: 300;
   color: #4f8cff;
   font-variant-numeric: tabular-nums;
 }
 
 .source {
-  margin-top: 24px;
+  margin-top: 20px;
   font-size: 12px;
   color: #6b7494;
   cursor: pointer;
@@ -87,7 +106,7 @@ html, body {
 
 .source:hover { color: #9aa4c0; }
 
-.actions { margin-top: 32px; }
+.actions { margin-top: 24px; }
 
 .btn-skip {
   background: transparent;
@@ -103,4 +122,119 @@ html, body {
 .btn-skip:hover {
   border-color: #6bd4c0;
   color: #f7f8fa;
+}
+
+/* ===== SVG guide shared ===== */
+.guide-svg .label {
+  fill: #9aa4c0;
+  font-size: 12px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.guide-svg .target {
+  fill: none;
+  stroke: #4f8cff;
+  stroke-width: 2;
+  opacity: 0.4;
+}
+
+.guide-svg .dot {
+  fill: #6bd4c0;
+  filter: drop-shadow(0 0 8px rgba(107, 212, 192, 0.7));
+}
+
+.guide-svg .eye-outline {
+  fill: none;
+  stroke: #4f8cff;
+  stroke-width: 2;
+}
+
+.guide-svg .eye-lid {
+  fill: #0b1020;
+  stroke: #4f8cff;
+  stroke-width: 2;
+}
+
+/* ===== 20-20-20: dot moves to distant target ===== */
+.dot-20-20-20 {
+  animation: dotFar 4s ease-in-out infinite;
+}
+@keyframes dotFar {
+  0%, 100% { transform: translate(200px, 120px); }
+  20% { transform: translate(380px, 30px); }
+  60% { transform: translate(380px, 30px); }
+  80% { transform: translate(200px, 120px); }
+}
+
+/* ===== Conscious blink: eyelid closes/opens ===== */
+.lid-top { animation: lidTop 3s ease-in-out infinite; transform-origin: 200px 80px; }
+.lid-bottom { animation: lidBottom 3s ease-in-out infinite; transform-origin: 200px 160px; }
+@keyframes lidTop {
+  0%, 100% { transform: scaleY(0); }
+  35%, 65% { transform: scaleY(1); }
+}
+@keyframes lidBottom {
+  0%, 100% { transform: scaleY(0); }
+  35%, 65% { transform: scaleY(1); }
+}
+
+/* ===== Near-far focus shift: dot pulses between near and far ===== */
+.dot-near-far {
+  animation: dotNearFar 5s ease-in-out infinite;
+  transform-origin: center;
+}
+@keyframes dotNearFar {
+  0%, 100% { transform: translate(200px, 120px) scale(1.8); }
+  50% { transform: translate(200px, 120px) scale(0.4); }
+}
+
+/* ===== Figure-8 tracing: dot follows figure-8 path ===== */
+.dot-figure8 {
+  animation: dotFigure8 6s linear infinite;
+}
+@keyframes dotFigure8 {
+  0% { offset-distance: 0%; }
+  100% { offset-distance: 100%; }
+}
+
+/* ===== Palming: expanding warm glow circle ===== */
+.palm-glow {
+  animation: palmGlow 5s ease-in-out infinite;
+  transform-origin: 200px 120px;
+}
+@keyframes palmGlow {
+  0%, 100% { transform: scale(0.7); opacity: 0.5; }
+  50% { transform: scale(1.1); opacity: 0.95; }
+}
+
+.palm-breathe-text { animation: breatheText 5s ease-in-out infinite; }
+@keyframes breatheText {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* ===== Horizontal eye rolls: dot sweeps left-right ===== */
+.dot-horizontal {
+  animation: dotHorizontal 3s ease-in-out infinite;
+}
+@keyframes dotHorizontal {
+  0%, 100% { transform: translate(80px, 120px); }
+  50% { transform: translate(320px, 120px); }
+}
+
+/* ===== Rest fallback: slow breathing circle ===== */
+.dot-rest {
+  animation: dotRest 4s ease-in-out infinite;
+  transform-origin: 200px 120px;
+}
+@keyframes dotRest {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.3); opacity: 0.9; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot-20-20-20, .dot-near-far, .dot-figure8, .dot-horizontal, .dot-rest,
+  .lid-top, .lid-bottom, .palm-glow, .palm-breathe-text {
+    animation: none;
+  }
 }
