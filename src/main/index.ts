@@ -6,7 +6,7 @@ import { exercisesForBreak } from "../data/exercises";
 import { t, TranslationKey } from "../data/i18n";
 import { loadPreferences, savePreferences } from "./preferences";
 import { Scheduler } from "./scheduler";
-import { registerBackgroundIpc, resolveBackgroundPath } from "./backgrounds";
+import { registerBackgroundIpc, resolveBackgroundPath, pickRandomBackground } from "./backgrounds";
 
 let tray: Tray | null = null;
 let breakWindow: BrowserWindow | null = null;
@@ -58,7 +58,13 @@ function buildBreakPlan(type: BreakType): BreakPlan {
       : preferences.longBreakDurationSeconds;
   let bgData: { mime: string; base64: string } | null = null;
   if (preferences.background.mode !== "none") {
-    const file = resolveBackgroundPath(preferences.background.selected, preferences.background.mode);
+    let file: string | null = null;
+    if (preferences.background.mode === "random") {
+      const pool = preferences.background.randomPool || "all";
+      file = pickRandomBackground(pool);
+    } else {
+      file = resolveBackgroundPath(preferences.background.selected, preferences.background.mode);
+    }
     if (file) {
       try {
         const buf = fs.readFileSync(file);

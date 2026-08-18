@@ -18,18 +18,23 @@
       saved: "Saved",
       bgSection: "Background",
       bgModeLabel: "Background mode",
+      bgPoolLabel: "Random pool",
       bgNone: "None",
       bgBuiltin: "Built-in",
       bgUser: "User images",
+      bgRandom: "Random",
       bgAdd: "Add image...",
       bgDelete: "Delete selected",
       bgHintNone: "No background shown during breaks.",
       bgHintBuiltin: "Choose a built-in nature scene for restful breaks.",
       bgHintUser: "Add your own images. Soft, low-contrast nature scenes work best.",
+      bgHintRandom: "A random background is picked for each break.",
       bgNoImages: "No user images yet. Click \"Add image...\" to select one.",
       bgAdded: "Added: ",
       bgDeleted: "Deleted: ",
       bgSelectPrompt: "Select an image first.",
+      bgNoFileSelected: "No file selected.",
+      bgError: "Error: ",
       medicalDisclaimer:
         "eye-care is for eye-fatigue relief only. It is not a medical device and does not diagnose, treat, or cure any condition. If you experience persistent eye discomfort, consult a licensed ophthalmologist.",
     },
@@ -51,18 +56,23 @@
       saved: "저장됨",
       bgSection: "배경화면",
       bgModeLabel: "배경 모드",
+      bgPoolLabel: "랜덤 풀",
       bgNone: "없음",
       bgBuiltin: "기본 제공",
       bgUser: "사용자 이미지",
+      bgRandom: "랜덤",
       bgAdd: "이미지 추가...",
       bgDelete: "선택 삭제",
       bgHintNone: "휴식 중 배경화면을 표시하지 않습니다.",
       bgHintBuiltin: "편안한 휴식을 위한 기본 자연 풍경을 선택하세요.",
       bgHintUser: "직접 이미지를 추가할 수 있어요. 부드럽고 저대비 자연 풍경이 가장 좋습니다.",
+      bgHintRandom: "매 휴식마다 랜덤으로 배경이 선택됩니다.",
       bgNoImages: "사용자 이미지가 없습니다. \"이미지 추가...\"를 눌러 선택하세요.",
       bgAdded: "추가됨: ",
       bgDeleted: "삭제됨: ",
       bgSelectPrompt: "이미지를 먼저 선택하세요.",
+      bgNoFileSelected: "선택된 파일이 없습니다.",
+      bgError: "오류: ",
       medicalDisclaimer:
         "eye-care는 눈 피로 완화 목적입니다. 의료기기가 아니며 질환을 진단·치료·완치하지 않습니다. 지속적인 눈 불편함이 있다면 안과 전문의와 상담하세요.",
     },
@@ -71,7 +81,7 @@
   const ids = [
     "miniEnabled", "miniInterval", "miniDuration",
     "longEnabled", "longInterval", "longDuration",
-    "soundEnabled", "strictMode", "language", "bgMode",
+    "soundEnabled", "strictMode", "language", "bgMode", "bgPool",
   ];
   const els = {};
   ids.forEach(function (id) { els[id] = document.getElementById(id); });
@@ -80,6 +90,8 @@
   const bgAddBtn = document.getElementById("bgAddBtn");
   const bgDeleteBtn = document.getElementById("bgDeleteBtn");
   const bgHintEl = document.getElementById("bgHint");
+  const bgActions = document.getElementById("bgActions");
+  const bgPoolRow = document.getElementById("bgPoolRow");
 
   const textEls = {
     settingsTitle: document.getElementById("settingsTitle"),
@@ -98,12 +110,13 @@
     longDurationLabel: document.getElementById("longDurationLabel"),
     bgSection: document.getElementById("bgSection"),
     bgModeLabel: document.getElementById("bgModeLabel"),
+    bgPoolLabel: document.getElementById("bgPoolLabel"),
     medicalDisclaimer: document.getElementById("medicalDisclaimer"),
   };
 
   let currentLang = "en";
   let saveTimer = null;
-  let bgConfig = { mode: "builtin", selected: "sunny-sky", userImages: [] };
+  let bgConfig = { mode: "builtin", selected: "sunny-sky", userImages: [], randomPool: "all" };
   let selectedBgName = null;
 
   function tr(key) {
@@ -118,11 +131,31 @@
     for (const k in textEls) {
       if (textEls[k] && s[k]) textEls[k].textContent = s[k];
     }
+    bgAddBtn.textContent = tr("bgAdd");
+    bgDeleteBtn.textContent = tr("bgDelete");
     const mode = els.bgMode.value;
+    updateBgHint(mode);
+    updateBgOptionLabels();
+    renderBgGallery();
+  }
+
+  function updateBgHint(mode) {
     if (mode === "none") bgHintEl.textContent = tr("bgHintNone");
     else if (mode === "builtin") bgHintEl.textContent = tr("bgHintBuiltin");
-    else bgHintEl.textContent = tr("bgHintUser");
-    renderBgGallery();
+    else if (mode === "user") bgHintEl.textContent = tr("bgHintUser");
+    else if (mode === "random") bgHintEl.textContent = tr("bgHintRandom");
+  }
+
+  function updateBgOptionLabels() {
+    const modeOpts = els.bgMode.options;
+    modeOpts[0].textContent = tr("bgNone");
+    modeOpts[1].textContent = tr("bgBuiltin");
+    modeOpts[2].textContent = tr("bgUser");
+    modeOpts[3].textContent = tr("bgRandom");
+    const poolOpts = els.bgPool.options;
+    poolOpts[0].textContent = tr("bgBuiltin");
+    poolOpts[1].textContent = tr("bgUser");
+    poolOpts[2].textContent = tr("bgBuiltin") + " + " + tr("bgUser");
   }
 
   function showStatus(msg) {
@@ -154,6 +187,7 @@
     if (prefs.background) {
       bgConfig = prefs.background;
       els.bgMode.value = bgConfig.mode || "builtin";
+      if (bgConfig.randomPool) els.bgPool.value = bgConfig.randomPool;
       selectedBgName = bgConfig.selected || null;
     }
     els.miniEnabled.checked = !!prefs.miniBreakEnabled;
@@ -170,13 +204,30 @@
   function renderBgGallery() {
     while (bgGallery.firstChild) bgGallery.removeChild(bgGallery.firstChild);
     const mode = els.bgMode.value;
-    if (mode === "none") {
-      bgAddBtn.disabled = false;
-      bgDeleteBtn.disabled = true;
+
+    if (mode === "random") {
+      bgActions.classList.add("hidden");
+      bgPoolRow.style.display = "";
+    } else if (mode === "user") {
+      bgActions.classList.remove("hidden");
+      bgPoolRow.style.display = "none";
+    } else {
+      bgActions.classList.add("hidden");
+      bgPoolRow.style.display = "none";
+    }
+
+    if (mode === "none" || mode === "random") {
+      bgGallery.classList.remove("list-mode");
+      if (mode === "none") return;
+      const note = document.createElement("p");
+      note.className = "bg-hint";
+      note.textContent = tr("bgHintRandom");
+      bgGallery.appendChild(note);
       return;
     }
+
     bgAddBtn.disabled = false;
-    bgDeleteBtn.disabled = mode !== "user" || !selectedBgName;
+    bgDeleteBtn.disabled = !selectedBgName;
 
     const list = mode === "builtin"
       ? window.eyeCare.backgrounds.listBuiltin()
@@ -186,9 +237,14 @@
       if (!names || names.length === 0) {
         const empty = document.createElement("p");
         empty.className = "bg-hint";
-        empty.textContent = mode === "user" ? tr("bgNoImages") : "";
+        empty.textContent = tr("bgNoImages");
         bgGallery.appendChild(empty);
         return;
+      }
+      if (names.length > 6) {
+        bgGallery.classList.add("list-mode");
+      } else {
+        bgGallery.classList.remove("list-mode");
       }
       if (!selectedBgName || names.indexOf(selectedBgName) === -1) {
         selectedBgName = names[0];
@@ -243,14 +299,13 @@
   els.bgMode.addEventListener("change", function () {
     const mode = els.bgMode.value;
     bgConfig.mode = mode;
-    if (mode === "none") {
-      bgHintEl.textContent = tr("bgHintNone");
-    } else if (mode === "builtin") {
-      bgHintEl.textContent = tr("bgHintBuiltin");
-    } else {
-      bgHintEl.textContent = tr("bgHintUser");
-    }
+    updateBgHint(mode);
     renderBgGallery();
+    scheduleSave();
+  });
+
+  els.bgPool.addEventListener("change", function () {
+    bgConfig.randomPool = els.bgPool.value;
     scheduleSave();
   });
 
@@ -301,7 +356,7 @@
 
   ids.forEach(function (id) {
     const el = els[id];
-    if (id === "language" || id === "bgMode") return;
+    if (id === "language" || id === "bgMode" || id === "bgPool") return;
     el.addEventListener("change", scheduleSave);
     el.addEventListener("input", scheduleSave);
   });

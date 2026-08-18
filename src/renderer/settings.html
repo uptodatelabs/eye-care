@@ -70,10 +70,19 @@
           <option value="none">None</option>
           <option value="builtin">Built-in</option>
           <option value="user">User images</option>
+          <option value="random">Random</option>
+        </select>
+      </label>
+      <label class="row" id="bgPoolRow" style="display:none">
+        <span id="bgPoolLabel">Random pool</span>
+        <select id="bgPool">
+          <option value="builtin">Built-in</option>
+          <option value="user">User images</option>
+          <option value="all">All</option>
         </select>
       </label>
       <div class="bg-gallery" id="bgGallery"></div>
-      <div class="bg-actions">
+      <div class="bg-actions" id="bgActions">
         <button type="button" id="bgAddBtn" class="btn-secondary">Add image...</button>
         <button type="button" id="bgDeleteBtn" class="btn-secondary">Delete selected</button>
       </div>

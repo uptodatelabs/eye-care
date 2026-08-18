@@ -31,12 +31,13 @@ export interface BreakPlan {
 
 export type Language = "en" | "ko";
 
-export type BackgroundMode = "none" | "builtin" | "user";
+export type BackgroundMode = "none" | "builtin" | "user" | "random";
 
 export interface BackgroundConfig {
   mode: BackgroundMode;
   selected: string;
   userImages: string[];
+  randomPool: "builtin" | "user" | "all";
 }
 
 export interface Preferences {
@@ -59,6 +60,7 @@ export const DEFAULT_PREFERENCES: Preferences = {
     mode: "builtin",
     selected: "sunny-sky",
     userImages: [],
+    randomPool: "builtin",
   },
   miniBreakEnabled: true,
   miniBreakIntervalMinutes: 20,

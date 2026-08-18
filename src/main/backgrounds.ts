@@ -38,12 +38,27 @@ export function resolveBackgroundPath(name: string, mode: BackgroundMode): strin
   }
   if (mode === "user") {
     const dir = userBackgroundsDir();
+    if (!fs.existsSync(dir)) return null;
     const candidates = fs
       .readdirSync(dir)
       .filter((f) => path.parse(f).name === name && /\.(png|jpe?g|webp|gif|svg)$/i.test(f));
     if (candidates.length > 0) return path.join(dir, candidates[0]);
   }
   return null;
+}
+
+export function pickRandomBackground(pool: "builtin" | "user" | "all"): string | null {
+  let poolNames: { name: string; mode: "builtin" | "user" }[] = [];
+  if (pool === "builtin" || pool === "all") {
+    poolNames = poolNames.concat(listBuiltinBackgrounds().map((n) => ({ name: n, mode: "builtin" as const })));
+  }
+  if (pool === "user" || pool === "all") {
+    poolNames = poolNames.concat(listUserBackgrounds().map((n) => ({ name: n, mode: "user" as const })));
+  }
+  if (poolNames.length === 0) return null;
+  const pick = poolNames[Math.floor(Math.random() * poolNames.length)];
+  const file = resolveBackgroundPath(pick.name, pick.mode);
+  return file;
 }
 
 const ALLOWED_EXT = [".png", ".jpg", ".jpeg", ".webp", ".gif", ".svg"];
