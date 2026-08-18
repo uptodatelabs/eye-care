@@ -26,7 +26,8 @@
     "node": ">=18"
   },
   "scripts": {
-    "dev": "tsc -p tsconfig.json --watch & electron .",
+    "dev": "tsc -p tsconfig.json && npm run copy-static && concurrently -k -n tsc,electron -c cyan,magenta \"tsc -p tsconfig.json --watch --preserveWatchOutput\" \"wait-on out/main/index.js && electron .\"",
+    "dev:fast": "npm run build && electron .",
     "build": "tsc -p tsconfig.json && npm run copy-static",
     "copy-static": "node scripts/copy-static.js",
     "start": "npm run build && electron .",
@@ -34,8 +35,10 @@
     "clean": "rimraf out dist"
   },
   "devDependencies": {
+    "concurrently": "^10.0.5",
     "electron": "^33.0.0",
     "rimraf": "^6.0.1",
-    "typescript": "^5.6.0"
+    "typescript": "^5.6.0",
+    "wait-on": "^9.1.0"
   }
 }
