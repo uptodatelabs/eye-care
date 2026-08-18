@@ -117,7 +117,7 @@ function buildTrayMenu(): Menu {
     {
       label: "About eye-care",
       click: () => {
-        shell.openExternal("https://github.com/rudylee/eye-care");
+        shell.openExternal("https://github.com/uptodatelabs/eye-care");
       },
     },
     { type: "separator" },

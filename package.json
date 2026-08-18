@@ -5,13 +5,13 @@
   "main": "out/main/index.js",
   "author": "eye-care contributors",
   "license": "MIT",
-  "homepage": "https://github.com/rudylee/eye-care",
+  "homepage": "https://github.com/uptodatelabs/eye-care",
   "repository": {
     "type": "git",
-    "url": "https://github.com/rudylee/eye-care.git"
+    "url": "https://github.com/uptodatelabs/eye-care.git"
   },
   "bugs": {
-    "url": "https://github.com/rudylee/eye-care/issues"
+    "url": "https://github.com/uptodatelabs/eye-care/issues"
   },
   "keywords": [
     "eye-care",

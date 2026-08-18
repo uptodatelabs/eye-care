@@ -27,6 +27,11 @@ Both intervals are configurable.
 
 Early development. Not yet functional. See `CONTRIBUTING.md` to get involved.
 
+## Links
+
+- Source: https://github.com/uptodatelabs/eye-care
+- Issues: https://github.com/uptodatelabs/eye-care/issues
+
 ## License
 
 MIT

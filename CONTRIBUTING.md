@@ -9,7 +9,7 @@ Requirements:
 - npm >= 9
 
 ```bash
-git clone https://github.com/rudylee/eye-care.git
+git clone https://github.com/uptodatelabs/eye-care.git
 cd eye-care
 npm install
 npm run dev
