@@ -18,10 +18,14 @@ export interface Exercise {
 export interface BreakPlan {
   type: BreakType;
   totalDurationSeconds: number;
+  language: Language;
   exercises: Exercise[];
 }
 
+export type Language = "en" | "ko";
+
 export interface Preferences {
+  language: Language;
   miniBreakEnabled: boolean;
   miniBreakIntervalMinutes: number;
   miniBreakDurationSeconds: number;
@@ -34,6 +38,7 @@ export interface Preferences {
 }
 
 export const DEFAULT_PREFERENCES: Preferences = {
+  language: "en",
   miniBreakEnabled: true,
   miniBreakIntervalMinutes: 20,
   miniBreakDurationSeconds: 20,

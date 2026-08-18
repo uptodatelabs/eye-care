@@ -61,6 +61,15 @@ input[type="checkbox"] {
   cursor: pointer;
 }
 
+select {
+  padding: 6px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 14px;
+  background: #fff;
+  cursor: pointer;
+}
+
 .status {
   font-size: 13px;
   color: #047857;

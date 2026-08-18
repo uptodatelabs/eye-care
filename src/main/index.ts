@@ -1,8 +1,9 @@
 import { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage, shell, BrowserWindowConstructorOptions } from "electron";
 import * as path from "path";
 import * as fs from "fs";
-import { Preferences, DEFAULT_PREFERENCES, BreakType, BreakPlan } from "../shared/types";
+import { Preferences, DEFAULT_PREFERENCES, BreakType, BreakPlan, Language } from "../shared/types";
 import { exercisesForBreak } from "../data/exercises";
+import { t, TranslationKey } from "../data/i18n";
 import { loadPreferences, savePreferences } from "./preferences";
 import { Scheduler } from "./scheduler";
 
@@ -57,6 +58,7 @@ function buildBreakPlan(type: BreakType): BreakPlan {
   return {
     type,
     totalDurationSeconds: duration,
+    language: preferences.language,
     exercises: exercisesForBreak(type, duration),
   };
 }
@@ -86,43 +88,45 @@ function showSettingsWindow(): void {
 }
 
 function buildTrayMenu(): Menu {
-  const nextLabel = scheduler?.nextBreakLabel() ?? "No break scheduled";
+  const lang = preferences.language;
+  const tt = (k: TranslationKey) => t(lang, k);
+  const nextLabel = scheduler?.nextBreakLabel(lang) ?? tt("noBreakScheduled");
   return Menu.buildFromTemplate([
-    { label: `eye-care`, enabled: false },
+    { label: tt("appTitle"), enabled: false },
     { type: "separator" },
     { label: nextLabel, enabled: false },
     { type: "separator" },
     {
-      label: "Take a mini break now",
+      label: tt("trayTakeMiniNow"),
       click: () => scheduler?.triggerNow("mini"),
     },
     {
-      label: "Take a long break now",
+      label: tt("trayTakeLongNow"),
       click: () => scheduler?.triggerNow("long"),
     },
     { type: "separator" },
     {
-      label: "Pause breaks for 1 hour",
+      label: tt("trayPause1Hour"),
       click: () => scheduler?.pauseFor(60 * 60 * 1000),
     },
     {
-      label: "Resume breaks",
+      label: tt("trayResume"),
       click: () => scheduler?.resume(),
     },
     { type: "separator" },
     {
-      label: "Settings...",
+      label: tt("traySettings"),
       click: () => showSettingsWindow(),
     },
     {
-      label: "About eye-care",
+      label: tt("trayAbout"),
       click: () => {
         shell.openExternal("https://github.com/uptodatelabs/eye-care");
       },
     },
     { type: "separator" },
     {
-      label: "Quit",
+      label: tt("trayQuit"),
       click: () => app.quit(),
     },
   ]);

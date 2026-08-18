@@ -1,4 +1,5 @@
-import { Preferences, BreakType } from "../shared/types";
+import { Preferences, BreakType, Language } from "../shared/types";
+import { t, TranslationKey } from "../data/i18n";
 
 type BreakCallback = (type: BreakType) => void;
 
@@ -86,18 +87,19 @@ export class Scheduler {
     }
   }
 
-  nextBreakLabel(): string {
+  nextBreakLabel(lang: Language): string {
+    const tt = (k: TranslationKey) => t(lang, k);
     const now = Date.now();
     if (now < this.pausedUntil) {
       const mins = Math.ceil((this.pausedUntil - now) / 60000);
-      return `Paused — resumes in ~${mins} min`;
+      return tt("trayPaused") + mins + " min";
     }
     const candidates: { type: string; at: number }[] = [];
-    if (this.prefs.miniBreakEnabled && this.nextMiniAt) candidates.push({ type: "Mini", at: this.nextMiniAt });
-    if (this.prefs.longBreakEnabled && this.nextLongAt) candidates.push({ type: "Long", at: this.nextLongAt });
-    if (candidates.length === 0) return "No break scheduled";
+    if (this.prefs.miniBreakEnabled && this.nextMiniAt) candidates.push({ type: tt("breakTitleMini"), at: this.nextMiniAt });
+    if (this.prefs.longBreakEnabled && this.nextLongAt) candidates.push({ type: tt("breakTitleLong"), at: this.nextLongAt });
+    if (candidates.length === 0) return tt("noBreakScheduled");
     candidates.sort((a, b) => a.at - b.at);
     const mins = Math.max(0, Math.ceil((candidates[0].at - now) / 60000));
-    return `Next: ${candidates[0].type} break in ~${mins} min`;
+    return tt("trayNextBreak") + candidates[0].type + " ~" + mins + " min";
   }
 }
