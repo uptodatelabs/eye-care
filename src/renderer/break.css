@@ -10,7 +10,22 @@ html, body {
   user-select: none;
 }
 
+.bg-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(14px) brightness(0.55);
+  transform: scale(1.08);
+}
+
+.bg-layer:empty { display: none; }
+
 #root {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;

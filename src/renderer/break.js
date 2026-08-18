@@ -392,12 +392,23 @@
     window.eyeCare.skipBreak();
   });
 
+  const bgLayer = document.getElementById("bgLayer");
+
+  function applyBackground(bg) {
+    if (!bg || !bg.base64) {
+      bgLayer.style.backgroundImage = "";
+      return;
+    }
+    bgLayer.style.backgroundImage = "url(data:" + bg.mime + ";base64," + bg.base64 + ")";
+  }
+
   window.eyeCare.onBreakStart(function (p) {
     plan = p;
     lang = p.language || "en";
     soundEnabled = p.soundEnabled !== false;
     document.documentElement.lang = lang;
     skipBtn.textContent = tr("skipBreak");
+    applyBackground(p.background);
     totalDuration = p.totalDurationSeconds;
     totalElapsed = 0;
     if (p.type === "mini") {

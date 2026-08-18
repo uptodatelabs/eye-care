@@ -15,18 +15,33 @@ export interface Exercise {
   forBreakTypes: BreakType[];
 }
 
+export interface BreakBackground {
+  mime: string;
+  base64: string;
+}
+
 export interface BreakPlan {
   type: BreakType;
   totalDurationSeconds: number;
   language: Language;
   soundEnabled: boolean;
+  background: BreakBackground | null;
   exercises: Exercise[];
 }
 
 export type Language = "en" | "ko";
 
+export type BackgroundMode = "none" | "builtin" | "user";
+
+export interface BackgroundConfig {
+  mode: BackgroundMode;
+  selected: string;
+  userImages: string[];
+}
+
 export interface Preferences {
   language: Language;
+  background: BackgroundConfig;
   miniBreakEnabled: boolean;
   miniBreakIntervalMinutes: number;
   miniBreakDurationSeconds: number;
@@ -40,6 +55,11 @@ export interface Preferences {
 
 export const DEFAULT_PREFERENCES: Preferences = {
   language: "en",
+  background: {
+    mode: "builtin",
+    selected: "sunny-sky",
+    userImages: [],
+  },
   miniBreakEnabled: true,
   miniBreakIntervalMinutes: 20,
   miniBreakDurationSeconds: 20,

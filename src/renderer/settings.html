@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;" />
   <title>eye-care — Settings</title>
   <link rel="stylesheet" href="settings.css" />
 </head>
@@ -60,6 +60,24 @@
         <span id="longDurationLabel">Duration (seconds)</span>
         <input type="number" id="longDuration" min="30" max="1800" />
       </label>
+    </section>
+
+    <section>
+      <h2 id="bgSection">Background</h2>
+      <label class="row">
+        <span id="bgModeLabel">Background mode</span>
+        <select id="bgMode">
+          <option value="none">None</option>
+          <option value="builtin">Built-in</option>
+          <option value="user">User images</option>
+        </select>
+      </label>
+      <div class="bg-gallery" id="bgGallery"></div>
+      <div class="bg-actions">
+        <button type="button" id="bgAddBtn" class="btn-secondary">Add image...</button>
+        <button type="button" id="bgDeleteBtn" class="btn-secondary">Delete selected</button>
+      </div>
+      <p class="bg-hint" id="bgHint"></p>
     </section>
 
     <p class="status" id="status"></p>

@@ -1,11 +1,12 @@
 import { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage, shell, BrowserWindowConstructorOptions } from "electron";
 import * as path from "path";
 import * as fs from "fs";
-import { Preferences, DEFAULT_PREFERENCES, BreakType, BreakPlan, Language } from "../shared/types";
+import { Preferences, DEFAULT_PREFERENCES, BreakType, BreakPlan, Language, BackgroundConfig } from "../shared/types";
 import { exercisesForBreak } from "../data/exercises";
 import { t, TranslationKey } from "../data/i18n";
 import { loadPreferences, savePreferences } from "./preferences";
 import { Scheduler } from "./scheduler";
+import { registerBackgroundIpc, resolveBackgroundPath } from "./backgrounds";
 
 let tray: Tray | null = null;
 let breakWindow: BrowserWindow | null = null;
@@ -55,11 +56,26 @@ function buildBreakPlan(type: BreakType): BreakPlan {
     type === "mini"
       ? preferences.miniBreakDurationSeconds
       : preferences.longBreakDurationSeconds;
+  let bgData: { mime: string; base64: string } | null = null;
+  if (preferences.background.mode !== "none") {
+    const file = resolveBackgroundPath(preferences.background.selected, preferences.background.mode);
+    if (file) {
+      try {
+        const buf = fs.readFileSync(file);
+        const ext = path.extname(file).slice(1).toLowerCase();
+        const mime = ext === "svg" ? "image/svg+xml" : "image/" + ext;
+        bgData = { mime, base64: buf.toString("base64") };
+      } catch (err) {
+        console.error("Failed to read background:", err);
+      }
+    }
+  }
   return {
     type,
     totalDurationSeconds: duration,
     language: preferences.language,
     soundEnabled: preferences.soundEnabled,
+    background: bgData,
     exercises: exercisesForBreak(type, duration),
   };
 }
@@ -174,6 +190,13 @@ app.whenReady().then(() => {
   preferences = loadPreferences();
   createTray();
   registerIpc();
+  registerBackgroundIpc(
+    () => preferences.background,
+    (c) => {
+      preferences.background = c;
+      savePreferences(preferences);
+    }
+  );
   scheduler = new Scheduler(preferences, (type) => {
     showBreakWindow(buildBreakPlan(type));
     updateTrayMenu();
