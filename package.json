@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "A PC eye-exercise reminder app based on ophthalmologist guidelines (20-20-20 rule, focus shifts, palming). Helps monitor-heavy users take guided eye breaks.",
   "main": "out/main/index.js",
+  "bin": {
+    "eye-care": "bin/eye-care.js"
+  },
   "author": {
     "name": "uptodatelabs",
     "email": "hello@uptodatelabs.com"
@@ -84,9 +87,11 @@
       "category": "Utility"
     }
   },
+  "dependencies": {
+    "electron": "^33.0.0"
+  },
   "devDependencies": {
     "concurrently": "^10.0.5",
-    "electron": "^33.0.0",
     "electron-builder": "^25.1.0",
     "rimraf": "^6.0.1",
     "typescript": "^5.6.0",
