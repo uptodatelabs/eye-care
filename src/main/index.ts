@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage, shell, BrowserWindowConstructorOptions } from "electron";
 import * as path from "path";
+import * as fs from "fs";
 import { Preferences, DEFAULT_PREFERENCES, BreakType, BreakPlan } from "../shared/types";
 import { exercisesForBreak } from "../data/exercises";
 import { loadPreferences, savePreferences } from "./preferences";
@@ -132,9 +133,17 @@ function updateTrayMenu(): void {
 }
 
 function createTray(): void {
-  const icon = nativeImage.createEmpty();
+  const iconPath = path.join(__dirname, "..", "..", "build", "tray.png");
+  let icon = nativeImage.createEmpty();
+  if (fs.existsSync(iconPath)) {
+    icon = nativeImage.createFromPath(iconPath);
+    if (process.platform === "darwin") {
+      icon.setTemplateImage(true);
+    }
+  }
   tray = new Tray(icon);
   tray.setToolTip("eye-care");
+  tray.on("double-click", () => showSettingsWindow());
   updateTrayMenu();
 }
 
@@ -164,6 +173,11 @@ app.whenReady().then(() => {
     updateTrayMenu();
   });
   scheduler.start();
+  if (preferences.firstRun) {
+    showSettingsWindow();
+    preferences.firstRun = false;
+    savePreferences(preferences);
+  }
 });
 
 app.on("window-all-closed", () => {

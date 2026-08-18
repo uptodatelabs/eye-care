@@ -28,8 +28,9 @@
   "scripts": {
     "dev": "tsc -p tsconfig.json && npm run copy-static && concurrently -k -n tsc,electron -c cyan,magenta \"tsc -p tsconfig.json --watch --preserveWatchOutput\" \"wait-on out/main/index.js && electron .\"",
     "dev:fast": "npm run build && electron .",
-    "build": "tsc -p tsconfig.json && npm run copy-static",
+    "build": "tsc -p tsconfig.json && npm run copy-static && npm run make-icon",
     "copy-static": "node scripts/copy-static.js",
+    "make-icon": "node scripts/make-icon.js",
     "start": "npm run build && electron .",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "clean": "rimraf out dist"

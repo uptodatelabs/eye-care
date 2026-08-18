@@ -30,6 +30,7 @@ export interface Preferences {
   longBreakDurationSeconds: number;
   soundEnabled: boolean;
   strictMode: boolean;
+  firstRun: boolean;
 }
 
 export const DEFAULT_PREFERENCES: Preferences = {
@@ -41,6 +42,7 @@ export const DEFAULT_PREFERENCES: Preferences = {
   longBreakDurationSeconds: 300,
   soundEnabled: true,
   strictMode: false,
+  firstRun: true,
 };
 
 export type BreakState =
