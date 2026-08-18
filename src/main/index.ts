@@ -169,6 +169,7 @@ function registerIpc(): void {
 }
 
 app.whenReady().then(() => {
+  Menu.setApplicationMenu(null);
   preferences = loadPreferences();
   createTray();
   registerIpc();

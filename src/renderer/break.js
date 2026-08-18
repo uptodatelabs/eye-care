@@ -33,6 +33,22 @@
         "palming": "Palming",
         "horizontal-rolls": "Horizontal Eye Rolls",
       },
+      steps: {
+        "20-20-20": ["Look at an object at least 20 feet (6 m) away — out a window or across the room."],
+        "conscious-blink": ["Close your eyes gently and softly for 2 seconds.", "Open slowly. Repeat the slow blink at a relaxed pace."],
+        "near-far-focus": ["Hold your finger 10-15 inches (25-38 cm) from your eyes and focus on it.", "Shift focus to an object 20 feet (6 m) or farther away.", "Back to your finger.", "Back to the distant object. Repeat smoothly."],
+        "figure-eight": ["Imagine a large figure-8 on the wall about 10 feet (3 m) away.", "Slowly trace it one way with your eyes only (head still).", "Reverse direction and trace it back."],
+        "palming": ["Rub your palms together until they feel warm.", "Close your eyes and cup your palms over them without pressing on the eyeballs.", "Breathe slowly and relax. Keep the position."],
+        "horizontal-rolls": ["Look as far right as comfortable (head still).", "Slowly move your gaze to the far left.", "Back to center.", "Repeat the slow sweep a few more times."],
+      },
+      sources: {
+        "20-20-20": "American Academy of Ophthalmology",
+        "conscious-blink": "American Academy of Ophthalmology — Computer Vision Syndrome",
+        "near-far-focus": "American Optometric Association — Computer Vision Initiative",
+        "figure-eight": "American Academy of Ophthalmology — Eye Exercises",
+        "palming": "American Academy of Ophthalmology — Eye Exercises",
+        "horizontal-rolls": "American Academy of Ophthalmology — Eye Exercises",
+      },
     },
     ko: {
       breakTitleMini: "미니 눈 휴식",
@@ -66,6 +82,22 @@
         "figure-eight": "8자 추적",
         "palming": "파밍 (손바닥 덮기)",
         "horizontal-rolls": "좌우 눈 운동",
+      },
+      steps: {
+        "20-20-20": ["20피트(6m) 이상 먼 곳을 바라보세요 — 창밖이나 방 반대편."],
+        "conscious-blink": ["부드럽게 2초간 눈을 감으세요.", "천천히 뜨세요. 편안한 속도로 반복합니다."],
+        "near-far-focus": ["손가락을 눈에서 25-38cm 거리에 두고 응시하세요.", "20피트(6m) 이상 먼 곳의 사물로 초점을 옮기세요.", "다시 손가락으로.", "다시 먼 곳으로. 부드럽게 반복하세요."],
+        "figure-eight": ["약 3m 앞 벽에 큰 8자가 있다고 상상하세요.", "머리는 움직이지 말고 눈만으로 한 방향으로 천천히 따라가세요.", "반대 방향으로 되돌아 가세요."],
+        "palming": ["손바닥을 비벼 따뜻하게 만드세요.", "눈을 감고 손바닥을 눈 위에 덮으세요 (안구를 누르지 마세요).", "천천히 호흡하며 편안히 유지하세요."],
+        "horizontal-rolls": ["머리는 그대로 둔 채 시선을 편안한 오른쪽 끝으로.", "시선을 천천히 왼쪽 끝으로 옮기세요.", "다시 중앙으로.", "느린 좌우 스윕을 몇 번 더 반복하세요."],
+      },
+      sources: {
+        "20-20-20": "미국안과학회 (AAO)",
+        "conscious-blink": "미국안과학회 — 컴퓨터 시력 증후군",
+        "near-far-focus": "미국검안사협회 — 컴퓨터 시력 이니셔티브",
+        "figure-eight": "미국안과학회 — 눈 운동",
+        "palming": "미국안과학회 — 눈 운동",
+        "horizontal-rolls": "미국안과학회 — 눈 운동",
       },
     },
   };
@@ -237,6 +269,20 @@
     return names[base] || base;
   }
 
+  function exerciseSource(id) {
+    const base = baseExerciseId(id);
+    const sources = (STRINGS[lang] || STRINGS.en).sources;
+    return sources[base] || "";
+  }
+
+  function stepTextFor(exerciseId, stepIndex) {
+    const base = baseExerciseId(exerciseId);
+    const steps = (STRINGS[lang] || STRINGS.en).steps;
+    const arr = steps[base];
+    if (arr && arr[stepIndex]) return arr[stepIndex];
+    return "";
+  }
+
   function loadStep() {
     if (!currentExercise) return;
     if (stepIndex >= currentSteps.length) {
@@ -244,7 +290,7 @@
       return;
     }
     const step = currentSteps[stepIndex];
-    stepTextEl.textContent = step.text;
+    stepTextEl.textContent = stepTextFor(currentExercise.id, stepIndex) || step.text;
     stepElapsed = 0;
     stepTimeEl.textContent = fmtTime(step.durationSeconds);
   }
@@ -259,7 +305,7 @@
     currentSteps = currentExercise.steps;
     stepIndex = 0;
     exerciseNameEl.textContent = exerciseName(currentExercise.id);
-    sourceEl.textContent = tr("sourcePrefix") + currentExercise.source;
+    sourceEl.textContent = tr("sourcePrefix") + (exerciseSource(currentExercise.id) || currentExercise.source);
     sourceEl.onclick = function () { window.eyeCare.openSource(currentExercise.sourceUrl); };
     renderGuide(currentExercise.id);
     loadStep();
@@ -330,7 +376,7 @@
     currentSteps = currentExercise.steps;
     stepIndex = 0;
     exerciseNameEl.textContent = exerciseName(currentExercise.id);
-    sourceEl.textContent = tr("sourcePrefix") + currentExercise.source;
+    sourceEl.textContent = tr("sourcePrefix") + (exerciseSource(currentExercise.id) || currentExercise.source);
     sourceEl.onclick = function () { window.eyeCare.openSource(currentExercise.sourceUrl); };
     renderGuide(currentExercise.id);
     loadStep();
