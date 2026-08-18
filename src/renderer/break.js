@@ -196,10 +196,9 @@
 
     "near-far-focus": function () {
       const group = el("g", {});
-      group.appendChild(text(120, 40, tr("guideNear"), "label"));
-      group.appendChild(text(280, 40, tr("guideFar"), "label"));
-      group.appendChild(el("rect", { x: 95, y: 80, width: 50, height: 80, rx: 6, className: "target" }));
-      group.appendChild(el("rect", { x: 265, y: 110, width: 30, height: 20, rx: 4, className: "target" }));
+      group.appendChild(text(200, 40, tr("guideNear"), "label"));
+      group.appendChild(text(200, 200, tr("guideFar"), "label"));
+      group.appendChild(el("rect", { x: 185, y: 100, width: 30, height: 40, rx: 6, className: "target" }));
       const bar = el("rect", { x: -25, y: -40, width: 50, height: 80, rx: 6, className: "dot dot-near-far" });
       group.appendChild(bar);
       return group;
