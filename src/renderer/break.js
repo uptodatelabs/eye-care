@@ -1,12 +1,12 @@
 (function () {
   const titleEl = document.getElementById("title");
   const subtitleEl = document.getElementById("subtitle");
-  const progressEl = document.getElementById("progress") as HTMLElement;
+  const progressEl = document.getElementById("progress");
   const exerciseNameEl = document.getElementById("exerciseName");
   const stepTextEl = document.getElementById("stepText");
   const stepTimeEl = document.getElementById("stepTime");
   const sourceEl = document.getElementById("source");
-  const skipBtn = document.getElementById("skipBtn") as HTMLButtonElement;
+  const skipBtn = document.getElementById("skipBtn");
 
   let totalElapsed = 0;
   let totalDuration = 1;
