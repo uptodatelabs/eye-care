@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline';" />
+  <title>eye-care — Settings</title>
+  <link rel="stylesheet" href="settings.css" />
+</head>
+<body>
+  <div class="wrap">
+    <h1>eye-care Settings</h1>
+    <p class="hint">Adjust break intervals and durations. Changes are saved automatically.</p>
+
+    <section>
+      <h2>Mini break</h2>
+      <label class="row">
+        <span>Enable mini breaks</span>
+        <input type="checkbox" id="miniEnabled" />
+      </label>
+      <label class="row">
+        <span>Interval (minutes)</span>
+        <input type="number" id="miniInterval" min="1" max="120" />
+      </label>
+      <label class="row">
+        <span>Duration (seconds)</span>
+        <input type="number" id="miniDuration" min="5" max="300" />
+      </label>
+    </section>
+
+    <section>
+      <h2>Long break</h2>
+      <label class="row">
+        <span>Enable long breaks</span>
+        <input type="checkbox" id="longEnabled" />
+      </label>
+      <label class="row">
+        <span>Interval (minutes)</span>
+        <input type="number" id="longInterval" min="5" max="240" />
+      </label>
+      <label class="row">
+        <span>Duration (seconds)</span>
+        <input type="number" id="longDuration" min="30" max="1800" />
+      </label>
+    </section>
+
+    <section>
+      <h2>General</h2>
+      <label class="row">
+        <span>Sound notifications</span>
+        <input type="checkbox" id="soundEnabled" />
+      </label>
+      <label class="row">
+        <span>Strict mode (no skip)</span>
+        <input type="checkbox" id="strictMode" />
+      </label>
+    </section>
+
+    <p class="status" id="status"></p>
+
+    <p class="medical">
+      eye-care is for eye-fatigue relief only. It is not a medical device and does not diagnose, treat, or cure any condition. If you experience persistent eye discomfort, consult a licensed ophthalmologist.
+    </p>
+  </div>
+  <script src="settings.js"></script>
+</body>
+</html>
