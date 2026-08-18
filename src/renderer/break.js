@@ -198,10 +198,10 @@
       const group = el("g", {});
       group.appendChild(text(120, 40, tr("guideNear"), "label"));
       group.appendChild(text(280, 40, tr("guideFar"), "label"));
-      group.appendChild(el("circle", { cx: 120, cy: 120, r: 24, className: "target" }));
-      group.appendChild(el("circle", { cx: 280, cy: 120, r: 10, className: "target" }));
-      const dot = el("circle", { cx: 0, cy: 0, r: 10, className: "dot dot-near-far" });
-      group.appendChild(dot);
+      group.appendChild(el("rect", { x: 95, y: 80, width: 50, height: 80, rx: 6, className: "target" }));
+      group.appendChild(el("rect", { x: 265, y: 110, width: 30, height: 20, rx: 4, className: "target" }));
+      const bar = el("rect", { x: -25, y: -40, width: 50, height: 80, rx: 6, className: "dot dot-near-far" });
+      group.appendChild(bar);
       return group;
     },
 
