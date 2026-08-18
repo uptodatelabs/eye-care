@@ -2,59 +2,24 @@ const fs = require("fs");
 const path = require("path");
 const zlib = require("zlib");
 
-const W = 16;
-const H = 16;
-
-const pixels = Buffer.alloc(W * H * 4);
-
-function setPixel(x, y, r, g, b, a) {
-  const i = (y * W + x) * 4;
-  pixels[i] = r;
-  pixels[i + 1] = g;
-  pixels[i + 2] = b;
-  pixels[i + 3] = a;
-}
-
-function inCircle(cx, cy, r, x, y) {
-  const dx = x - cx;
-  const dy = y - cy;
-  return dx * dx + dy * dy <= r * r;
-}
-
-function inRing(cx, cy, rOuter, rInner, x, y) {
-  return inCircle(cx, cy, rOuter, x, y) && !inCircle(cx, cy, rInner, x, y);
-}
-
-for (let y = 0; y < H; y++) {
-  for (let x = 0; x < W; x++) {
-    let r = 0, g = 0, b = 0, a = 0;
-
-    const eyeShape =
-      (x >= 2 && x <= 13 && y >= 5 && y <= 10) &&
-      Math.abs(5.5 - y) <= 4.5 - 0.6 * Math.abs(7.5 - x);
-
-    if (eyeShape) {
-      r = 79; g = 140; b = 255; a = 255;
-    }
-
-    if (inCircle(7.5, 7.5, 2.2, x, y)) {
-      r = 20; g = 30; b = 60; a = 255;
-    }
-    if (inCircle(7.5, 7.5, 0.9, x, y)) {
-      r = 240; g = 245; b = 255; a = 255;
-    }
-
-    setPixel(x, y, r, g, b, a);
+function makePng(W, H, pixelFn) {
+  const pixels = Buffer.alloc(W * H * 4);
+  pixelFn(W, H, pixels);
+  const raw = Buffer.alloc(H * (1 + W * 4));
+  for (let y = 0; y < H; y++) {
+    raw[y * (1 + W * 4)] = 0;
+    pixels.copy(raw, y * (1 + W * 4) + 1, y * W * 4, (y + 1) * W * 4);
   }
+  const compressed = zlib.deflateSync(raw);
+  const sig = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
+  const ihdr = Buffer.alloc(13);
+  ihdr.writeUInt32BE(W, 0);
+  ihdr.writeUInt32BE(H, 4);
+  ihdr[8] = 8;
+  ihdr[9] = 6;
+  const png = Buffer.concat([sig, chunk("IHDR", ihdr), chunk("IDAT", compressed), chunk("IEND", Buffer.alloc(0))]);
+  return png;
 }
-
-const raw = Buffer.alloc(H * (1 + W * 4));
-for (let y = 0; y < H; y++) {
-  raw[y * (1 + W * 4)] = 0;
-  pixels.copy(raw, y * (1 + W * 4) + 1, y * W * 4, (y + 1) * W * 4);
-}
-
-const compressed = zlib.deflateSync(raw);
 
 function chunk(type, data) {
   const len = Buffer.alloc(4);
@@ -76,26 +41,80 @@ function crc32(buf) {
   return (c ^ 0xffffffff) >>> 0;
 }
 
-const sig = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
-const ihdr = Buffer.alloc(13);
-ihdr.writeUInt32BE(W, 0);
-ihdr.writeUInt32BE(H, 4);
-ihdr[8] = 8;
-ihdr[9] = 6;
-ihdr[10] = 0;
-ihdr[11] = 0;
-ihdr[12] = 0;
+function inCircle(cx, cy, r, x, y) {
+  const dx = x - cx;
+  const dy = y - cy;
+  return dx * dx + dy * dy <= r * r;
+}
 
-const png = Buffer.concat([
-  sig,
-  chunk("IHDR", ihdr),
-  chunk("IDAT", compressed),
-  chunk("IEND", Buffer.alloc(0)),
-]);
+function drawEye(W, H, pixels) {
+  const cx = W / 2;
+  const cy = H / 2;
+  const eyeW = W * 0.42;
+  const eyeH = H * 0.28;
+  for (let y = 0; y < H; y++) {
+    for (let x = 0; x < W; x++) {
+      let r = 0, g = 0, b = 0, a = 0;
+      const dx = (x - cx) / eyeW;
+      const dy = (y - cy) / eyeH;
+      const eyeShape = dx * dx + dy * dy <= 1;
+      if (eyeShape) {
+        r = 79; g = 140; b = 255; a = 255;
+      }
+      const pupilR = Math.min(W, H) * 0.14;
+      if (inCircle(cx, cy, pupilR, x, y)) {
+        r = 20; g = 30; b = 60; a = 255;
+      }
+      const glintR = Math.min(W, H) * 0.06;
+      if (inCircle(cx - pupilR * 0.3, cy - pupilR * 0.3, glintR, x, y)) {
+        r = 240; g = 245; b = 255; a = 255;
+      }
+      const i = (y * W + x) * 4;
+      pixels[i] = r;
+      pixels[i + 1] = g;
+      pixels[i + 2] = b;
+      pixels[i + 3] = a;
+    }
+  }
+}
+
+function makeIco(sizes) {
+  const pngs = sizes.map((s) => ({ size: s, png: makePng(s, s, drawEye) }));
+  const headerSize = 6 + pngs.length * 16;
+  const header = Buffer.alloc(6);
+  header.writeUInt16LE(0, 0);
+  header.writeUInt16LE(1, 2);
+  header.writeUInt16LE(pngs.length, 4);
+  const entries = [];
+  let offset = headerSize;
+  for (const { size, png } of pngs) {
+    const entry = Buffer.alloc(16);
+    entry[0] = size >= 256 ? 0 : size;
+    entry[1] = size >= 256 ? 0 : size;
+    entry[2] = 0;
+    entry[3] = 0;
+    entry.writeUInt16LE(1, 4);
+    entry.writeUInt16LE(32, 6);
+    entry.writeUInt32LE(png.length, 8);
+    entry.writeUInt32LE(offset, 12);
+    entries.push(entry);
+    offset += png.length;
+  }
+  return Buffer.concat([header, ...entries, ...pngs.map((p) => p.png)]);
+}
 
 const dir = path.join(__dirname, "..", "build");
 if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-fs.writeFileSync(path.join(dir, "tray.png"), png);
-fs.writeFileSync(path.join(dir, "tray@2x.png"), png);
-console.log("Wrote build/tray.png (" + png.length + " bytes, " + W + "x" + H + ")");
-console.log("Wrote build/tray@2x.png");
+
+const trayPng = makePng(16, 16, drawEye);
+fs.writeFileSync(path.join(dir, "tray.png"), trayPng);
+fs.writeFileSync(path.join(dir, "tray@2x.png"), makePng(32, 32, drawEye));
+console.log("Wrote build/tray.png, build/tray@2x.png");
+
+const icon256 = makePng(256, 256, drawEye);
+fs.writeFileSync(path.join(dir, "icon.png"), icon256);
+console.log("Wrote build/icon.png (256x256)");
+
+const ico = makeIco([16, 32, 48, 64, 128, 256]);
+fs.writeFileSync(path.join(dir, "icon.ico"), ico);
+console.log("Wrote build/icon.ico (" + ico.length + " bytes, multi-size)");

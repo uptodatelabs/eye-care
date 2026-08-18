@@ -163,6 +163,21 @@ input[type="range"] {
   font-variant-numeric: tabular-nums;
 }
 
+.app-footer {
+  margin-top: 20px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+  text-align: center;
+  font-size: 11px;
+  color: #9ca3af;
+  line-height: 1.6;
+}
+
+.app-version { font-weight: 600; color: #6b7280; }
+.app-author { color: #9ca3af; }
+.app-author a { color: #4f8cff; text-decoration: none; }
+.app-author a:hover { text-decoration: underline; }
+
 .status {
   font-size: 13px;
   color: #047857;

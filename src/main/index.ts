@@ -183,6 +183,14 @@ function registerIpc(): void {
     updateTrayMenu();
     return preferences;
   });
+  ipcMain.handle("app:info", () => {
+    return {
+      version: app.getVersion(),
+      author: "uptodatelabs",
+      name: "eye-care",
+      homepage: "https://github.com/uptodatelabs/eye-care",
+    };
+  });
   ipcMain.handle("break:skip", () => {
     if (breakWindow && !breakWindow.isDestroyed()) breakWindow.close();
   });

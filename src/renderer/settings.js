@@ -386,4 +386,22 @@
   window.eyeCare.getPreferences().then(function (prefs) {
     applyPrefs(prefs);
   });
+
+  if (window.eyeCare.getAppInfo) {
+    window.eyeCare.getAppInfo().then(function (info) {
+      const versionEl = document.getElementById("appVersion");
+      const authorEl = document.getElementById("appAuthor");
+      if (versionEl) versionEl.textContent = "eye-care v" + info.version;
+      if (authorEl) {
+        const link = document.createElement("a");
+        link.href = "#";
+        link.textContent = "by " + info.author;
+        link.addEventListener("click", function (e) {
+          e.preventDefault();
+          if (info.homepage) window.open(info.homepage, "_blank");
+        });
+        authorEl.appendChild(link);
+      }
+    });
+  }
 })();

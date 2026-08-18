@@ -4,6 +4,7 @@ import { Preferences, BackgroundConfig } from "../shared/types";
 contextBridge.exposeInMainWorld("eyeCare", {
   getPreferences: () => ipcRenderer.invoke("prefs:get"),
   updatePreferences: (next: Partial<Preferences>) => ipcRenderer.invoke("prefs:update", next),
+  getAppInfo: () => ipcRenderer.invoke("app:info"),
   backgrounds: {
     listBuiltin: () => ipcRenderer.invoke("bg:listBuiltin"),
     listUser: () => ipcRenderer.invoke("bg:listUser"),
@@ -11,7 +12,7 @@ contextBridge.exposeInMainWorld("eyeCare", {
     deleteUser: (name: string) => ipcRenderer.invoke("bg:deleteUser", name),
     set: (cfg: BackgroundConfig) => ipcRenderer.invoke("bg:set", cfg),
     get: () => ipcRenderer.invoke("bg:get"),
-    loadFile: (name: string, mode: "none" | "builtin" | "user") =>
+    loadFile: (name: string, mode: "none" | "builtin" | "user" | "random") =>
       ipcRenderer.invoke("bg:loadFile", name, mode),
   },
 });
