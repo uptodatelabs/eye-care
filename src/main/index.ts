@@ -59,6 +59,7 @@ function buildBreakPlan(type: BreakType): BreakPlan {
     type,
     totalDurationSeconds: duration,
     language: preferences.language,
+    soundEnabled: preferences.soundEnabled,
     exercises: exercisesForBreak(type, duration),
   };
 }

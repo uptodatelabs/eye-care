@@ -126,6 +126,52 @@
   let currentExercise = null;
   let plan = null;
   let ticker = null;
+  let soundEnabled = true;
+
+  let audioCtx = null;
+  function getAudioCtx() {
+    if (!audioCtx) {
+      try {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      } catch (e) {
+        audioCtx = null;
+      }
+    }
+    return audioCtx;
+  }
+
+  function playTone(freq, startAt, duration, gainValue) {
+    const ctx = getAudioCtx();
+    if (!ctx) return;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(freq, startAt);
+    gain.gain.setValueAtTime(0, startAt);
+    gain.gain.linearRampToValueAtTime(gainValue, startAt + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, startAt + duration);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(startAt);
+    osc.stop(startAt + duration + 0.05);
+  }
+
+  function playChime(kind) {
+    if (!soundEnabled) return;
+    const ctx = getAudioCtx();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    if (kind === "exercise-start") {
+      playTone(660, now, 0.18, 0.18);
+      playTone(880, now + 0.08, 0.22, 0.18);
+    } else if (kind === "step-end") {
+      playTone(523.25, now, 0.14, 0.12);
+    } else if (kind === "break-complete") {
+      playTone(523.25, now, 0.2, 0.18);
+      playTone(659.25, now + 0.1, 0.2, 0.18);
+      playTone(783.99, now + 0.2, 0.32, 0.2);
+    }
+  }
 
   function fmtTime(s) {
     const m = Math.floor(s / 60);
@@ -308,6 +354,7 @@
     sourceEl.onclick = function () { window.eyeCare.openSource(currentExercise.sourceUrl); };
     renderGuide(currentExercise.id);
     loadStep();
+    playChime("exercise-start");
   }
 
   function finishBreak() {
@@ -320,6 +367,7 @@
     setProgress(100);
     clearSvg();
     svgEl.appendChild(GUIDES.rest());
+    playChime("break-complete");
     setTimeout(function () { window.eyeCare.skipBreak(); }, 4000);
   }
 
@@ -333,6 +381,7 @@
     const remaining = step.durationSeconds - stepElapsed;
     stepTimeEl.textContent = fmtTime(remaining > 0 ? remaining : 0);
     if (remaining <= 0) {
+      playChime("step-end");
       stepIndex += 1;
       loadStep();
     }
@@ -346,6 +395,7 @@
   window.eyeCare.onBreakStart(function (p) {
     plan = p;
     lang = p.language || "en";
+    soundEnabled = p.soundEnabled !== false;
     document.documentElement.lang = lang;
     skipBtn.textContent = tr("skipBreak");
     totalDuration = p.totalDurationSeconds;
@@ -362,6 +412,7 @@
       stepTextEl.textContent = tr("restEyesInstruction");
       stepTimeEl.textContent = fmtTime(p.totalDurationSeconds);
       renderGuide("rest");
+      playChime("exercise-start");
       ticker = setInterval(function () {
         totalElapsed += 1;
         setProgress((totalElapsed / totalDuration) * 100);
@@ -379,6 +430,7 @@
     sourceEl.onclick = function () { window.eyeCare.openSource(currentExercise.sourceUrl); };
     renderGuide(currentExercise.id);
     loadStep();
+    playChime("exercise-start");
     ticker = setInterval(tick, 1000);
   });
 })();

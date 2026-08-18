@@ -19,6 +19,7 @@ export interface BreakPlan {
   type: BreakType;
   totalDurationSeconds: number;
   language: Language;
+  soundEnabled: boolean;
   exercises: Exercise[];
 }
 
