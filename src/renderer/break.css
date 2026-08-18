@@ -185,11 +185,12 @@ html, body {
 /* ===== Near-far focus shift: bar fixed at center, scales near (big) <-> far (small) ===== */
 .dot-near-far {
   animation: dotNearFar 8s ease-in-out infinite;
-  transform-origin: center;
+  transform-origin: 200px 120px;
+  transform-box: view-box;
 }
 @keyframes dotNearFar {
-  0%, 100% { transform: translate(200px, 120px) scale(1); }
-  50% { transform: translate(200px, 120px) scale(0.35); }
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(0.35); }
 }
 
 /* ===== Figure-8 tracing: reverse direction halfway through ===== */

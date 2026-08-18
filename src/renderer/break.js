@@ -199,7 +199,7 @@
       group.appendChild(text(200, 40, tr("guideNear"), "label"));
       group.appendChild(text(200, 200, tr("guideFar"), "label"));
       group.appendChild(el("rect", { x: 185, y: 100, width: 30, height: 40, rx: 6, className: "target" }));
-      const bar = el("rect", { x: -25, y: -40, width: 50, height: 80, rx: 6, className: "dot dot-near-far" });
+      const bar = el("rect", { x: 175, y: 80, width: 50, height: 80, rx: 6, className: "dot dot-near-far" });
       group.appendChild(bar);
       return group;
     },
