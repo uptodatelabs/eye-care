@@ -171,12 +171,12 @@
     while (bgGallery.firstChild) bgGallery.removeChild(bgGallery.firstChild);
     const mode = els.bgMode.value;
     if (mode === "none") {
-      bgAddBtn.disabled = true;
+      bgAddBtn.disabled = false;
       bgDeleteBtn.disabled = true;
       return;
     }
-    bgAddBtn.disabled = mode !== "user";
-    bgDeleteBtn.disabled = mode !== "user";
+    bgAddBtn.disabled = false;
+    bgDeleteBtn.disabled = mode !== "user" || !selectedBgName;
 
     const list = mode === "builtin"
       ? window.eyeCare.backgrounds.listBuiltin()
@@ -257,19 +257,30 @@
   });
 
   bgAddBtn.addEventListener("click", function () {
+    if (els.bgMode.value !== "user") {
+      els.bgMode.value = "user";
+      bgConfig.mode = "user";
+      bgHintEl.textContent = tr("bgHintUser");
+    }
     window.eyeCare.backgrounds.addUser().then(function (res) {
       if (res && res.added && res.added.length > 0) {
         showStatus(tr("bgAdded") + res.added.join(", "));
         const cfg = window.eyeCare.backgrounds.get();
         Promise.resolve(cfg).then(function (c) {
           bgConfig = c;
-          if (bgConfig.userImages.length > 0 && !bgConfig.selected) {
+          if (bgConfig.userImages.length > 0) {
             bgConfig.selected = bgConfig.userImages[0];
             selectedBgName = bgConfig.userImages[0];
           }
           renderBgGallery();
+          scheduleSave();
         });
+      } else if (res && res.added && res.added.length === 0) {
+        showStatus(currentLang === "ko" ? "선택된 파일이 없습니다." : "No file selected.");
       }
+    }).catch(function (err) {
+      console.error("addUser failed:", err);
+      showStatus(currentLang === "ko" ? "오류: " + (err && err.message ? err.message : "") : "Error: " + (err && err.message ? err.message : ""));
     });
   });
 

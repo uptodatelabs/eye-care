@@ -1,4 +1,4 @@
-import { app, dialog, ipcMain } from "electron";
+import { app, dialog, ipcMain, BrowserWindow } from "electron";
 import * as path from "path";
 import * as fs from "fs";
 import { BackgroundConfig, BackgroundMode } from "../shared/types";
@@ -54,14 +54,18 @@ export function registerBackgroundIpc(getConfig: () => BackgroundConfig, setConf
   ipcMain.handle("bg:listBuiltin", () => listBuiltinBackgrounds());
   ipcMain.handle("bg:listUser", () => listUserBackgrounds());
 
-  ipcMain.handle("bg:addUser", async () => {
-    const result = await dialog.showOpenDialog({
+  ipcMain.handle("bg:addUser", async (e) => {
+    const parentWindow = BrowserWindow.fromWebContents(e.sender);
+    const opts: Electron.OpenDialogOptions = {
       title: "Select background image",
       properties: ["openFile", "multiSelections"],
       filters: [
         { name: "Images", extensions: ["png", "jpg", "jpeg", "webp", "gif", "svg"] },
       ],
-    });
+    };
+    const result = parentWindow
+      ? await dialog.showOpenDialog(parentWindow, opts)
+      : await dialog.showOpenDialog(opts);
     if (result.canceled || result.filePaths.length === 0) return { added: [] };
     const dir = userBackgroundsDir();
     const added: string[] = [];
