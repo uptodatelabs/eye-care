@@ -81,7 +81,7 @@ function buildBreakPlan(type: BreakType): BreakPlan {
     totalDurationSeconds: duration,
     language: preferences.language,
     soundEnabled: preferences.soundEnabled,
-    background: bgData,
+    background: bgData ? { ...bgData, blurStrength: preferences.background.blurStrength ?? 3 } : null,
     exercises: exercisesForBreak(type, duration),
   };
 }

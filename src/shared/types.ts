@@ -18,6 +18,7 @@ export interface Exercise {
 export interface BreakBackground {
   mime: string;
   base64: string;
+  blurStrength: number;
 }
 
 export interface BreakPlan {
@@ -38,6 +39,7 @@ export interface BackgroundConfig {
   selected: string;
   userImages: string[];
   randomPool: "builtin" | "user" | "all";
+  blurStrength: number;
 }
 
 export interface Preferences {
@@ -60,7 +62,8 @@ export const DEFAULT_PREFERENCES: Preferences = {
     mode: "builtin",
     selected: "sunny-sky",
     userImages: [],
-    randomPool: "builtin",
+    randomPool: "all",
+    blurStrength: 3,
   },
   miniBreakEnabled: true,
   miniBreakIntervalMinutes: 20,

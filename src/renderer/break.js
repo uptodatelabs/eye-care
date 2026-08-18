@@ -402,6 +402,8 @@
     }
     const url = "url(data:" + bg.mime + ";base64," + bg.base64 + ")";
     bgLayer.style.backgroundImage = url;
+    const blur = typeof bg.blurStrength === "number" ? bg.blurStrength : 3;
+    bgLayer.style.filter = "blur(" + blur + "px) brightness(0.8)";
     bgLayer.classList.add("has-bg");
   }
 

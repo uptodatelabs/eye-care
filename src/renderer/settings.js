@@ -29,6 +29,7 @@
       bgHintBuiltin: "Choose a built-in nature scene for restful breaks.",
       bgHintUser: "Add your own images. Soft, low-contrast nature scenes work best.",
       bgHintRandom: "A random background is picked for each break.",
+      bgBlurLabel: "Blur strength",
       bgNoImages: "No user images yet. Click \"Add image...\" to select one.",
       bgAdded: "Added: ",
       bgDeleted: "Deleted: ",
@@ -67,6 +68,7 @@
       bgHintBuiltin: "편안한 휴식을 위한 기본 자연 풍경을 선택하세요.",
       bgHintUser: "직접 이미지를 추가할 수 있어요. 부드럽고 저대비 자연 풍경이 가장 좋습니다.",
       bgHintRandom: "매 휴식마다 랜덤으로 배경이 선택됩니다.",
+      bgBlurLabel: "흐림 정도",
       bgNoImages: "사용자 이미지가 없습니다. \"이미지 추가...\"를 눌러 선택하세요.",
       bgAdded: "추가됨: ",
       bgDeleted: "삭제됨: ",
@@ -81,7 +83,7 @@
   const ids = [
     "miniEnabled", "miniInterval", "miniDuration",
     "longEnabled", "longInterval", "longDuration",
-    "soundEnabled", "strictMode", "language", "bgMode", "bgPool",
+    "soundEnabled", "strictMode", "language", "bgMode", "bgPool", "bgBlur",
   ];
   const els = {};
   ids.forEach(function (id) { els[id] = document.getElementById(id); });
@@ -92,6 +94,8 @@
   const bgHintEl = document.getElementById("bgHint");
   const bgActions = document.getElementById("bgActions");
   const bgPoolRow = document.getElementById("bgPoolRow");
+  const bgBlurRow = document.getElementById("bgBlurRow");
+  const bgBlurValue = document.getElementById("bgBlurValue");
 
   const textEls = {
     settingsTitle: document.getElementById("settingsTitle"),
@@ -111,6 +115,7 @@
     bgSection: document.getElementById("bgSection"),
     bgModeLabel: document.getElementById("bgModeLabel"),
     bgPoolLabel: document.getElementById("bgPoolLabel"),
+    bgBlurLabel: document.getElementById("bgBlurLabel"),
     medicalDisclaimer: document.getElementById("medicalDisclaimer"),
   };
 
@@ -188,6 +193,10 @@
       bgConfig = prefs.background;
       els.bgMode.value = bgConfig.mode || "builtin";
       if (bgConfig.randomPool) els.bgPool.value = bgConfig.randomPool;
+      if (typeof bgConfig.blurStrength === "number") {
+        els.bgBlur.value = bgConfig.blurStrength;
+        bgBlurValue.textContent = bgConfig.blurStrength;
+      }
       selectedBgName = bgConfig.selected || null;
     }
     els.miniEnabled.checked = !!prefs.miniBreakEnabled;
@@ -208,12 +217,19 @@
     if (mode === "random") {
       bgActions.classList.add("hidden");
       bgPoolRow.style.display = "";
+      bgBlurRow.style.display = "";
     } else if (mode === "user") {
       bgActions.classList.remove("hidden");
       bgPoolRow.style.display = "none";
+      bgBlurRow.style.display = "";
+    } else if (mode === "builtin") {
+      bgActions.classList.add("hidden");
+      bgPoolRow.style.display = "none";
+      bgBlurRow.style.display = "";
     } else {
       bgActions.classList.add("hidden");
       bgPoolRow.style.display = "none";
+      bgBlurRow.style.display = "none";
     }
 
     if (mode === "none" || mode === "random") {
@@ -309,6 +325,12 @@
     scheduleSave();
   });
 
+  els.bgBlur.addEventListener("input", function () {
+    bgBlurValue.textContent = els.bgBlur.value;
+    bgConfig.blurStrength = parseInt(els.bgBlur.value, 10);
+    scheduleSave();
+  });
+
   bgAddBtn.addEventListener("click", function () {
     if (els.bgMode.value !== "user") {
       els.bgMode.value = "user";
@@ -356,7 +378,7 @@
 
   ids.forEach(function (id) {
     const el = els[id];
-    if (id === "language" || id === "bgMode" || id === "bgPool") return;
+    if (id === "language" || id === "bgMode" || id === "bgPool" || id === "bgBlur") return;
     el.addEventListener("change", scheduleSave);
     el.addEventListener("input", scheduleSave);
   });
