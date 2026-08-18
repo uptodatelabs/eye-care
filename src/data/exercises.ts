@@ -85,14 +85,36 @@ export const EXERCISES: Exercise[] = [
 
 export function exercisesForBreak(type: "mini" | "long", durationSeconds: number): Exercise[] {
   const pool = EXERCISES.filter((e) => e.forBreakTypes.includes(type));
+  if (pool.length === 0) return [];
+
   const selected: Exercise[] = [];
   let used = 0;
-  for (const ex of pool) {
+  let i = 0;
+
+  while (used < durationSeconds) {
+    const ex = pool[i % pool.length];
     const exTotal = ex.steps.reduce((s, st) => s + st.durationSeconds, 0);
-    if (used + exTotal <= durationSeconds) {
-      selected.push(ex);
+    const remaining = durationSeconds - used;
+
+    if (exTotal <= remaining) {
+      selected.push({ ...ex, id: ex.id + "-" + i });
       used += exTotal;
+    } else {
+      const scaled: Exercise = {
+        ...ex,
+        id: ex.id + "-" + i,
+        steps: ex.steps.map((st) => ({
+          text: st.text,
+          durationSeconds: Math.max(3, Math.round((st.durationSeconds / exTotal) * remaining)),
+        })),
+      };
+      const scaledTotal = scaled.steps.reduce((s, st) => s + st.durationSeconds, 0);
+      selected.push(scaled);
+      used += scaledTotal;
+      break;
     }
+    i += 1;
   }
+
   return selected;
 }
