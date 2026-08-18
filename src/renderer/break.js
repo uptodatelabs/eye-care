@@ -59,9 +59,11 @@
       const group = el("g", {});
       group.appendChild(text(200, 30, "Look 20 ft (6 m) away", "label"));
       group.appendChild(el("circle", { cx: 200, cy: 120, r: 14, className: "target" }));
-      group.appendChild(el("circle", { cx: 380, cy: 30, r: 22, className: "target" }));
-      group.appendChild(text(380, 70, "far", "label"));
-      group.appendChild(text(200, 160, "you", "label"));
+      group.appendChild(text(200, 158, "you", "label"));
+      group.appendChild(el("circle", { cx: 120, cy: 50, r: 22, className: "target" }));
+      group.appendChild(text(120, 88, "far L", "label"));
+      group.appendChild(el("circle", { cx: 280, cy: 50, r: 22, className: "target" }));
+      group.appendChild(text(280, 88, "far R", "label"));
       const dot = el("circle", { cx: 0, cy: 0, r: 10, className: "dot dot-20-20-20" });
       group.appendChild(dot);
       return group;
@@ -82,9 +84,9 @@
     "near-far-focus": function () {
       const group = el("g", {});
       group.appendChild(text(120, 40, "Near", "label"));
-      group.appendChild(text(320, 40, "Far", "label"));
+      group.appendChild(text(280, 40, "Far", "label"));
       group.appendChild(el("circle", { cx: 120, cy: 120, r: 24, className: "target" }));
-      group.appendChild(el("circle", { cx: 320, cy: 120, r: 10, className: "target" }));
+      group.appendChild(el("circle", { cx: 280, cy: 120, r: 10, className: "target" }));
       const dot = el("circle", { cx: 0, cy: 0, r: 10, className: "dot dot-near-far" });
       group.appendChild(dot);
       return group;

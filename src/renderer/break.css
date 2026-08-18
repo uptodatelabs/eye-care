@@ -155,15 +155,19 @@ html, body {
   stroke-width: 2;
 }
 
-/* ===== 20-20-20: dot moves to distant target ===== */
+/* ===== 20-20-20: dot alternates center -> far-left -> center -> far-right ===== */
 .dot-20-20-20 {
-  animation: dotFar 4s ease-in-out infinite;
+  animation: dotFar 8s ease-in-out infinite;
 }
 @keyframes dotFar {
   0%, 100% { transform: translate(200px, 120px); }
-  20% { transform: translate(380px, 30px); }
-  60% { transform: translate(380px, 30px); }
-  80% { transform: translate(200px, 120px); }
+  12% { transform: translate(200px, 120px); }
+  25% { transform: translate(120px, 50px); }
+  37% { transform: translate(120px, 50px); }
+  50% { transform: translate(200px, 120px); }
+  62% { transform: translate(200px, 120px); }
+  75% { transform: translate(280px, 50px); }
+  87% { transform: translate(280px, 50px); }
 }
 
 /* ===== Conscious blink: eyelid closes/opens ===== */
@@ -178,14 +182,16 @@ html, body {
   35%, 65% { transform: scaleY(1); }
 }
 
-/* ===== Near-far focus shift: dot pulses between near and far ===== */
+/* ===== Near-far focus shift: dot alternates left-near, right-far (both sides) ===== */
 .dot-near-far {
-  animation: dotNearFar 5s ease-in-out infinite;
+  animation: dotNearFar 8s ease-in-out infinite;
   transform-origin: center;
 }
 @keyframes dotNearFar {
-  0%, 100% { transform: translate(200px, 120px) scale(1.8); }
-  50% { transform: translate(200px, 120px) scale(0.4); }
+  0%, 100% { transform: translate(120px, 120px) scale(1.8); }
+  25% { transform: translate(280px, 120px) scale(0.4); }
+  50% { transform: translate(120px, 120px) scale(1.8); }
+  75% { transform: translate(280px, 120px) scale(0.4); }
 }
 
 /* ===== Figure-8 tracing: dot follows figure-8 path ===== */
@@ -213,13 +219,14 @@ html, body {
   50% { opacity: 1; }
 }
 
-/* ===== Horizontal eye rolls: dot sweeps left-right ===== */
+/* ===== Horizontal eye rolls: dot sweeps L -> R -> L (symmetric) ===== */
 .dot-horizontal {
-  animation: dotHorizontal 3s ease-in-out infinite;
+  animation: dotHorizontal 4s ease-in-out infinite;
 }
 @keyframes dotHorizontal {
-  0%, 100% { transform: translate(80px, 120px); }
+  0% { transform: translate(80px, 120px); }
   50% { transform: translate(320px, 120px); }
+  100% { transform: translate(80px, 120px); }
 }
 
 /* ===== Rest fallback: slow breathing circle ===== */
