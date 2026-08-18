@@ -397,9 +397,12 @@
   function applyBackground(bg) {
     if (!bg || !bg.base64) {
       bgLayer.style.backgroundImage = "";
+      bgLayer.classList.remove("has-bg");
       return;
     }
-    bgLayer.style.backgroundImage = "url(data:" + bg.mime + ";base64," + bg.base64 + ")";
+    const url = "url(data:" + bg.mime + ";base64," + bg.base64 + ")";
+    bgLayer.style.backgroundImage = url;
+    bgLayer.classList.add("has-bg");
   }
 
   window.eyeCare.onBreakStart(function (p) {

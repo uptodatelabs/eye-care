@@ -19,9 +19,10 @@ html, body {
   background-repeat: no-repeat;
   filter: blur(14px) brightness(0.55);
   transform: scale(1.08);
+  display: none;
 }
 
-.bg-layer:empty { display: none; }
+.bg-layer.has-bg { display: block; }
 
 #root {
   position: relative;
