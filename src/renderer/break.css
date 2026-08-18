@@ -17,8 +17,8 @@ html, body {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  filter: blur(14px) brightness(0.55);
-  transform: scale(1.08);
+  filter: blur(3px) brightness(0.8);
+  transform: scale(1.05);
   display: none;
 }
 
@@ -38,6 +38,9 @@ html, body {
   width: min(680px, 92vw);
   padding: 40px 36px;
   text-align: center;
+  background: rgba(11, 16, 32, 0.55);
+  border-radius: 16px;
+  backdrop-filter: blur(8px);
 }
 
 .header { margin-bottom: 24px; }
