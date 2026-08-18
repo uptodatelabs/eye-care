@@ -1,0 +1,40 @@
+{
+  "name": "eye-care",
+  "version": "0.1.0",
+  "description": "A PC eye-exercise reminder app based on ophthalmologist guidelines (20-20-20 rule, focus shifts, palming). Helps monitor-heavy users take guided eye breaks.",
+  "main": "out/main/index.js",
+  "author": "eye-care contributors",
+  "license": "MIT",
+  "homepage": "https://github.com/rudylee/eye-care",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rudylee/eye-care.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rudylee/eye-care/issues"
+  },
+  "keywords": [
+    "eye-care",
+    "eye-exercise",
+    "break-reminder",
+    "20-20-20",
+    "health",
+    "electron",
+    "productivity"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "tsc -p tsconfig.json --watch & electron .",
+    "build": "tsc -p tsconfig.json",
+    "start": "npm run build && electron .",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "clean": "rimraf out dist"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.6.0"
+  }
+}
