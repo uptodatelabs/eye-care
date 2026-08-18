@@ -60,10 +60,10 @@
       group.appendChild(text(200, 30, "Look 20 ft (6 m) away", "label"));
       group.appendChild(el("circle", { cx: 200, cy: 120, r: 14, className: "target" }));
       group.appendChild(text(200, 158, "you", "label"));
-      group.appendChild(el("circle", { cx: 120, cy: 50, r: 22, className: "target" }));
-      group.appendChild(text(120, 88, "far L", "label"));
-      group.appendChild(el("circle", { cx: 280, cy: 50, r: 22, className: "target" }));
-      group.appendChild(text(280, 88, "far R", "label"));
+      group.appendChild(el("circle", { cx: 60, cy: 50, r: 22, className: "target" }));
+      group.appendChild(text(60, 88, "far L", "label"));
+      group.appendChild(el("circle", { cx: 340, cy: 50, r: 22, className: "target" }));
+      group.appendChild(text(340, 88, "far R", "label"));
       const dot = el("circle", { cx: 0, cy: 0, r: 10, className: "dot dot-20-20-20" });
       group.appendChild(dot);
       return group;
@@ -135,9 +135,9 @@
     rest: function () {
       const group = el("g", {});
       group.appendChild(text(200, 40, "Rest your eyes", "label"));
-      const ring = el("circle", { cx: 200, cy: 120, r: 40, fill: "none", stroke: "#4f8cff", "stroke-width": 2, opacity: 0.3 });
+      const ring = el("circle", { cx: 200, cy: 130, r: 80, fill: "none", stroke: "#4f8cff", "stroke-width": 2, opacity: 0.3 });
       group.appendChild(ring);
-      const dot = el("circle", { cx: 200, cy: 120, r: 20, fill: "#6bd4c0", opacity: 0.6, className: "dot-rest" });
+      const dot = el("circle", { cx: 200, cy: 130, r: 60, fill: "#6bd4c0", opacity: 0.5, className: "dot-rest" });
       group.appendChild(dot);
       return group;
     },
@@ -187,7 +187,7 @@
     setProgress(100);
     clearSvg();
     svgEl.appendChild(GUIDES.rest());
-    setTimeout(function () { window.eyeCare.skipBreak(); }, 2500);
+    setTimeout(function () { window.eyeCare.skipBreak(); }, 4000);
   }
 
   function tick() {
