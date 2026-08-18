@@ -186,9 +186,13 @@
       if (!names || names.length === 0) {
         const empty = document.createElement("p");
         empty.className = "bg-hint";
-        empty.textContent = tr("bgNoImages");
+        empty.textContent = mode === "user" ? tr("bgNoImages") : "";
         bgGallery.appendChild(empty);
         return;
+      }
+      if (!selectedBgName || names.indexOf(selectedBgName) === -1) {
+        selectedBgName = names[0];
+        bgConfig.selected = selectedBgName;
       }
       names.forEach(function (name) {
         const thumb = document.createElement("div");
@@ -243,14 +247,8 @@
       bgHintEl.textContent = tr("bgHintNone");
     } else if (mode === "builtin") {
       bgHintEl.textContent = tr("bgHintBuiltin");
-      if (!window.eyeCare.backgrounds.listBuiltin().includes(bgConfig.selected)) {
-        bgConfig.selected = "sunny-sky";
-        selectedBgName = "sunny-sky";
-      }
     } else {
       bgHintEl.textContent = tr("bgHintUser");
-      selectedBgName = bgConfig.userImages[0] || null;
-      bgConfig.selected = selectedBgName || "";
     }
     renderBgGallery();
     scheduleSave();
