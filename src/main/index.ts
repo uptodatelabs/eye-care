@@ -47,7 +47,7 @@ function showBreakWindow(plan: BreakPlan): void {
   });
   breakWindow.on("closed", () => {
     breakWindow = null;
-    scheduler?.resumeAfterBreak();
+    scheduler?.notifyBreakEnded();
   });
 }
 

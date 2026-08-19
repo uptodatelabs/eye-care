@@ -11,6 +11,8 @@ export class Scheduler {
   private pausedUntil = 0;
   private nextMiniAt = 0;
   private nextLongAt = 0;
+  private activeType: BreakType | null = null;
+  private activeStartedAt = 0;
 
   constructor(prefs: Preferences, onBreak: BreakCallback) {
     this.prefs = prefs;
@@ -18,7 +20,8 @@ export class Scheduler {
   }
 
   start(): void {
-    this.scheduleNext();
+    this.resetBothFromNow();
+    this.scheduleTimers();
   }
 
   stop(): void {
@@ -31,38 +34,102 @@ export class Scheduler {
   applyPreferences(prefs: Preferences): void {
     this.prefs = prefs;
     this.stop();
-    this.scheduleNext();
+    this.resetBothFromNow();
+    this.scheduleTimers();
   }
 
-  private scheduleNext(): void {
+  private durationOf(type: BreakType): number {
+    return (
+      (type === "mini"
+        ? this.prefs.miniBreakDurationSeconds
+        : this.prefs.longBreakDurationSeconds) * 1000
+    );
+  }
+
+  private intervalOf(type: BreakType): number {
+    return (
+      (type === "mini"
+        ? this.prefs.miniBreakIntervalMinutes
+        : this.prefs.longBreakIntervalMinutes) *
+      60 *
+      1000
+    );
+  }
+
+  private nextAtOf(type: BreakType): number {
+    return type === "mini" ? this.nextMiniAt : this.nextLongAt;
+  }
+
+  private resetBothFromNow(): void {
     const now = Date.now();
-    if (this.prefs.miniBreakEnabled) {
-      this.nextMiniAt = now + this.prefs.miniBreakIntervalMinutes * 60 * 1000;
-      const delay = Math.max(1000, this.nextMiniAt - now);
-      this.miniTimer = setTimeout(() => this.fire("mini"), delay);
+    this.nextMiniAt = this.prefs.miniBreakEnabled ? now + this.intervalOf("mini") : 0;
+    this.nextLongAt = this.prefs.longBreakEnabled ? now + this.intervalOf("long") : 0;
+  }
+
+  private scheduleTimers(): void {
+    this.stop();
+    const now = Date.now();
+    if (this.prefs.miniBreakEnabled && this.nextMiniAt) {
+      this.miniTimer = setTimeout(
+        () => this.fire("mini"),
+        Math.max(1000, this.nextMiniAt - now)
+      );
     }
-    if (this.prefs.longBreakEnabled) {
-      this.nextLongAt = now + this.prefs.longBreakIntervalMinutes * 60 * 1000;
-      const delay = Math.max(1000, this.nextLongAt - now);
-      this.longTimer = setTimeout(() => this.fire("long"), delay);
+    if (this.prefs.longBreakEnabled && this.nextLongAt) {
+      this.longTimer = setTimeout(
+        () => this.fire("long"),
+        Math.max(1000, this.nextLongAt - now)
+      );
     }
   }
 
   private fire(type: BreakType): void {
     if (Date.now() < this.pausedUntil) {
       const rescheduleIn = this.pausedUntil - Date.now();
-      const t = setTimeout(() => this.fire(type), rescheduleIn);
-      if (type === "mini") this.miniTimer = t;
-      else this.longTimer = t;
+      const timer = setTimeout(() => this.fire(type), rescheduleIn);
+      if (type === "mini") this.miniTimer = timer;
+      else this.longTimer = timer;
       return;
     }
+    if (this.activeType) {
+      return;
+    }
+    this.activeType = type;
+    this.activeStartedAt = Date.now();
     this.onBreak(type);
   }
 
   triggerNow(type: BreakType): void {
-    if (type === "mini" && this.miniTimer) clearTimeout(this.miniTimer);
-    if (type === "long" && this.longTimer) clearTimeout(this.longTimer);
-    this.onBreak(type);
+    if (this.activeType) {
+      return;
+    }
+    this.stop();
+    if (type === "mini") this.nextMiniAt = 0;
+    else this.nextLongAt = 0;
+    this.fire(type);
+    if (!this.activeType) return;
+    if (type === "mini") this.nextMiniAt = Date.now() + this.intervalOf("mini");
+    else this.nextLongAt = Date.now() + this.intervalOf("long");
+    this.scheduleTimers();
+  }
+
+  notifyBreakEnded(): void {
+    const now = Date.now();
+    const endedType = this.activeType;
+    this.activeType = null;
+    if (!endedType) return;
+    if (endedType === "mini") {
+      this.nextMiniAt = this.prefs.miniBreakEnabled ? now + this.intervalOf("mini") : 0;
+      if (this.prefs.longBreakEnabled && this.nextLongAt <= now) {
+        this.nextLongAt = now + this.intervalOf("long");
+      }
+    } else {
+      this.nextLongAt = this.prefs.longBreakEnabled ? now + this.intervalOf("long") : 0;
+      if (this.prefs.miniBreakEnabled && this.nextMiniAt <= now) {
+        this.nextMiniAt = now + this.intervalOf("mini");
+      }
+    }
+    this.scheduleTimers();
   }
 
   pauseFor(ms: number): void {
@@ -71,20 +138,6 @@ export class Scheduler {
 
   resume(): void {
     this.pausedUntil = 0;
-  }
-
-  resumeAfterBreak(): void {
-    const now = Date.now();
-    if (this.prefs.miniBreakEnabled) {
-      this.nextMiniAt = now + this.prefs.miniBreakIntervalMinutes * 60 * 1000;
-      if (this.miniTimer) clearTimeout(this.miniTimer);
-      this.miniTimer = setTimeout(() => this.fire("mini"), this.nextMiniAt - now);
-    }
-    if (this.prefs.longBreakEnabled) {
-      this.nextLongAt = now + this.prefs.longBreakIntervalMinutes * 60 * 1000;
-      if (this.longTimer) clearTimeout(this.longTimer);
-      this.longTimer = setTimeout(() => this.fire("long"), this.nextLongAt - now);
-    }
   }
 
   nextBreakLabel(lang: Language): string {
