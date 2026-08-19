@@ -1,6 +1,6 @@
 {
   "name": "eye-care",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A PC eye-exercise reminder app based on ophthalmologist guidelines (20-20-20 rule, focus shifts, palming). Helps monitor-heavy users take guided eye breaks.",
   "main": "out/main/index.js",
   "bin": {
