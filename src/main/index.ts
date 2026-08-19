@@ -37,7 +37,7 @@ function windowOptionsForOverlay(): BrowserWindowConstructorOptions {
 
 function showBreakWindow(plan: BreakPlan): void {
   if (breakWindow && !breakWindow.isDestroyed()) {
-    breakWindow.close();
+    return;
   }
   breakWindow = new BrowserWindow(windowOptionsForOverlay());
   breakWindow.loadFile(path.join(__dirname, "..", "renderer", "break.html"));

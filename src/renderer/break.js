@@ -51,7 +51,7 @@
       },
     },
     ko: {
-      breakTitleMini: "미니 눈 휴식",
+      breakTitleMini: "짧은 눈 휴식",
       breakSubtitleMini: "눈에 빠른 휴식을 주세요.",
       breakTitleLong: "긴 눈 휴식",
       breakSubtitleLong: "가이드를 따라 운동해주세요.",
